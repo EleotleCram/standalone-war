@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
   standalone project(':starter')
-  standalone 'org.eclipse.jetty.aggregate:jetty-server:7.3.1.v20110307'
+  standalone 'org.eclipse.jetty.aggregate:jetty-server:8.0.4.v20111024'
 }
 
 defaultTasks 'buildStandaloneWar'
