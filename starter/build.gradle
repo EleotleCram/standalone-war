@@ -5,6 +5,42 @@ repositories {
 }
 
 dependencies {
-        compile 'org.eclipse.jetty.aggregate:jetty-server:8.0.4.v20111024'
-        compile 'org.eclipse.jetty.aggregate:jetty-webapp:8.0.4.v20111024'
+	compile 'org.eclipse.jetty.aggregate:jetty-server:8.0.4.v20111024'
+	compile 'org.eclipse.jetty.aggregate:jetty-webapp:8.0.4.v20111024'
+	compile 'commons-configuration:commons-configuration:1.7'
+	compile 'org.slf4j:slf4j-api:1.6.1'
+	compile 'org.slf4j:slf4j-log4j12:1.6.1'
+}
+
+def generatedResources = "$buildDir/generated-resources/main"
+
+sourceSets {
+	main {
+		//let's register an output folder on the main SourceSet:
+		output.dir(generatedResources, builtBy: 'generateMyResources')
+		//it is now a part of the 'main' classpath and will be a part of the
+		output.each { it.mkdirs() }
+	}
+}
+
+def getPropertyOrDefault(propertyName, defaultValue) {
+	try {
+		getProperty(propertyName)
+	} catch(MissingPropertyException) {
+		return defaultValue
+	}
+}
+
+//a task that generates the resources:
+task generateMyResources {
+	doLast {
+		def webserver_properties = new File(generatedResources, "webserver.properties")
+		webserver_properties.text = file("/home/mtoele/GitRepositories/standalone-war/gradle.properties").getText()
+
+		def log4j_properties = new File(generatedResources, "log4j.properties")
+		log4j_properties.text = getPropertyOrDefault('log4j.properties', """\
+log4j.appender.Stdout=org.apache.log4j.varia.NullAppender
+log4j.rootLogger=INFO,Stdout
+""")
+	}
 }
