@@ -1,0 +1,25 @@
+PROP_NAME_WEBSERVER_TIMEOUT=com.example.net.webserver.timeout
+PROP_NAME_WEBSERVER_BIND_ADDRESS=com.example.net.webserver.bindAddress
+PROP_NAME_WEBSERVER_LISTENPORT=com.example.net.webserver.listenPort
+PROP_NAME_WEBSERVER_TEMPDIR=com.example.net.webserver.tempDir
+PROP_NAME_WEBSERVER_SSL=com.example.net.webserver.ssl
+PROP_NAME_WEBSERVER_SSL_LISTENPORT=com.example.net.webserver.ssl.listenPort
+PROP_NAME_WEBSERVER_SSL_KEYSTORE_TYPE=com.example.net.webserver.ssl.keyStoreType
+PROP_NAME_WEBSERVER_SSL_KEYSTORE_FILE=com.example.net.webserver.ssl.keyStoreFile
+PROP_NAME_WEBSERVER_SSL_KEYSTORE_PASSWORD=com.example.net.webserver.ssl.keyStorePassword
+
+webserver.defaultListenPort=8080
+webserver.ssl.defaultListenPort=8443
+
+webserver.configFilename=webserver.conf
+webserver.extraClasspath=~/.webserver,/etc/webserver
+
+log4j.properties=\
+	log4j.appender.Stdout=org.apache.log4j.ConsoleAppender\n\
+	log4j.appender.Stdout.layout=org.apache.log4j.PatternLayout\n\
+	log4j.appender.Stdout.layout.conversionPattern=%-5p - %t - %-26.26c{1} - %m\\n\n\
+	log4j.rootLogger=INFO,Stdout\n\
+	log4j.logger.com.example.net.webserver=TRACE\n
+
+inWar=webapp-0.1.war
+outWar=build/webapp-standalone-0.1.war
