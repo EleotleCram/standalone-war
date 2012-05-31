@@ -1,0 +1,20 @@
+########################################################
+#                                                      #
+# Web Server Configuration (Standalone mode, Optional) #
+#                                                      #
+########################################################
+
+# Note 1: The gradle.properties.example expects this file as either ~/.webserver/webserver.conf or /etc/webserver/webserver.conf.
+# Note 2: All these properties can also be specified (or overridden) from the commandline using the -D option.
+
+# bind address for the http/https sockets
+com.example.net.webserver.bindAddress = www.example.com
+
+# ssl configuration
+com.example.net.webserver.ssl = true
+com.example.net.webserver.ssl.listenPort = 8443
+
+# contains server ssl certificate of the web server
+com.example.net.webserver.ssl.keyStoreFile = file:/etc/ssl/www.example.com.p12
+com.example.net.webserver.ssl.keyStoreType = PKCS12
+com.example.net.webserver.ssl.keyStorePassword = s3cr3t
