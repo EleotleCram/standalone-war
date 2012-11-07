@@ -187,7 +187,11 @@ public class Starter {
 		}
 
 		WebAppContext webapp = new WebAppContext();
-		webapp.setExtraClasspath(getString("webserver.extraClasspath", ""));
+		String extraClasspath = getString("webserver.extraClasspath", "");
+
+		logger.info("Setting extra classpath for webapp: {}", extraClasspath);
+
+		webapp.setExtraClasspath(extraClasspath);
 		webapp.setContextPath("/");
 		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
