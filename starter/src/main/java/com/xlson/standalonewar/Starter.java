@@ -198,6 +198,10 @@ public class Starter {
 
 		ProtectionDomain protectionDomain = Starter.class.getProtectionDomain();
 		URL location = protectionDomain.getCodeSource().getLocation();
+
+		System.setProperty(Starter.class.getPackage().getName() + ".warLocation", location.toString());
+		logger.debug("War location: " + location);
+
 		webapp.setWar(location.toExternalForm());
 
 		server.setHandler(webapp);
