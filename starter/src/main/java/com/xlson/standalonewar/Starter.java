@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
@@ -57,6 +58,34 @@ public class Starter {
 	private static PropertiesConfiguration defaultProperties;
 	private static PropertiesConfiguration config;
 	private static Logger logger = LoggerFactory.getLogger(Starter.class);
+	private static URL warLocation;
+
+	static {
+		ProtectionDomain protectionDomain = Starter.class.getProtectionDomain();
+		warLocation = protectionDomain.getCodeSource().getLocation();
+
+		System.setProperty(Starter.class.getPackage().getName() + ".warLocation", warLocation.toString());
+		logger.debug("War location: " + warLocation);
+
+		System.getProperties().put(Starter.class.getName() + ".restart", new Runnable() {
+			@Override
+			public void run() {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							logger.warn("restarting...");
+							stop();
+							start();
+							logger.warn("restarted.");
+						} catch (Exception ex) {
+							logger.error("", ex);
+						}
+					}
+				}).start();
+			}
+		});
+	}
 
 	private static String getString(String propertyName) {
 		return getString(propertyName, null);
@@ -70,6 +99,15 @@ public class Starter {
 		return Integer.getInteger(propertyName, config.getInteger(propertyName, defaultValue));
 	}
 
+	private static PropertiesConfiguration loadConfig() {
+		String configFilename = defaultProperties.getString("webserver.configFilename", "webserver.conf");
+		try {
+			return new PropertiesConfiguration(configFilename);
+		} catch(ConfigurationException e) {
+			return new PropertiesConfiguration();
+		}
+	}
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -79,20 +117,14 @@ public class Starter {
 
 			appendClasspath(defaultProperties.getList("webserver.extraClasspath"));
 
-			String configFilename = defaultProperties.getString("webserver.configFilename", "webserver.conf");
-			try {
-				config = new PropertiesConfiguration(configFilename);
-			} catch(ConfigurationException e) {
-				config = new PropertiesConfiguration();
-			}
+			config = loadConfig();
 
 			final String PROP_NAME_WEBSERVER_TIMEOUT = defaultProperties.getString("PROP_NAME_WEBSERVER_TIMEOUT", "webserver.timeout");
 			int timeout = Integer.parseInt(getString(PROP_NAME_WEBSERVER_TIMEOUT, "0"));
 			start();
 			if (timeout != 0) {
 				Thread.sleep(timeout);
-				server.stop();
-				server.join();
+				stop();
 			}
 		} catch (Exception ex) {
 			logger.error("error", ex);
@@ -110,6 +142,8 @@ public class Starter {
 		final String PROP_NAME_WEBSERVER_SSL_KEYSTORE_TYPE = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL_KEYSTORE_TYPE", "webserver.ssl.keyStoreType");
 		final String PROP_NAME_WEBSERVER_SSL_KEYSTORE_FILE = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL_KEYSTORE_FILE", "webserver.ssl.keyStoreFile");
 		final String PROP_NAME_WEBSERVER_SSL_KEYSTORE_PASSWORD = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL_KEYSTORE_PASSWORD", "webserver.ssl.keyStorePassword");
+
+		config = loadConfig();
 
 		String tempPath = getString(PROP_NAME_WEBSERVER_TEMPDIR, System.getProperty("java.io.tmpdir"));
 		logger.info("using '" + tempPath + "' as temporary directory");
@@ -195,14 +229,7 @@ public class Starter {
 		webapp.setContextPath("/");
 		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
-
-		ProtectionDomain protectionDomain = Starter.class.getProtectionDomain();
-		URL location = protectionDomain.getCodeSource().getLocation();
-
-		System.setProperty(Starter.class.getPackage().getName() + ".warLocation", location.toString());
-		logger.debug("War location: " + location);
-
-		webapp.setWar(location.toExternalForm());
+		webapp.setWar(warLocation.toExternalForm());
 
 		server.setHandler(webapp);
 		server.start();
@@ -220,8 +247,11 @@ public class Starter {
 	 * (The paths are expected to be comma-separated.)
 	 */
 	public static void appendClasspath(List<String> paths) throws IOException {
+		logger.info("appendClassPath: {}", paths);
 		for(String path : paths) {
-			path = path.replaceAll("~", System.getProperty("user.home")) + File.separator;
+			path = path.replaceAll("~", System.getProperty("user.home"))
+					   .replaceAll("\\$\\{com.xlson.standalonewar.warLocation\\}", orElse(new File(System.getProperty("com.xlson.standalonewar.warLocation", "")).getParent(), ""))
+							+ File.separator;
 			URL url;
 			try {
 				url = new URL(path);
@@ -250,5 +280,9 @@ public class Starter {
 			throw new IOException("Error, could not add URL to system classloader");
 		}
 
+	}
+
+	public static <T> T orElse(T lhs, T rhs) {
+		return lhs != null ? lhs : rhs;
 	}
 }
