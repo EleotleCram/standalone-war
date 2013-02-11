@@ -12,7 +12,7 @@ webserver.defaultListenPort=8080
 webserver.ssl.defaultListenPort=8443
 
 webserver.configFilename=webserver.conf
-webserver.extraClasspath=~/.webserver,/etc/webserver
+webserver.extraClasspath=${com.xlson.standalonewar.warLocation},~/.webserver,/etc/webserver
 
 log4j.properties=\
 	log4j.appender.Stdout=org.apache.log4j.ConsoleAppender\n\
