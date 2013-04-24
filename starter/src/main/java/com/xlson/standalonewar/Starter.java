@@ -249,14 +249,14 @@ public class Starter {
 	public static void appendClasspath(List<String> paths) throws IOException {
 		logger.info("appendClassPath: {}", paths);
 		for(String path : paths) {
-			path = path.replaceAll("~", System.getProperty("user.home"))
+			path = path.replaceAll("~", new File(System.getProperty("user.home")).toURI().toString())
 					   .replaceAll("\\$\\{com.xlson.standalonewar.warLocation\\}", orElse(new File(System.getProperty("com.xlson.standalonewar.warLocation", "")).getParent(), ""))
 							+ File.separator;
 			URL url;
 			try {
 				url = new URL(path);
 			} catch(MalformedURLException e) {
-				url = new URL("file://"+path);
+				url = new File(path).toURI().toURL();
 			}
 			logger.info("Appending the following path to the system class path: " + url);
 			appendClasspath(url);
