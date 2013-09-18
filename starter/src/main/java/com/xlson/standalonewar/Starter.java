@@ -137,6 +137,7 @@ public class Starter {
 		final String PROP_NAME_WEBSERVER_BIND_ADDRESS = defaultProperties.getString("PROP_NAME_WEBSERVER_BIND_ADDRESS", "webserver.bindAddress");
 		final String PROP_NAME_WEBSERVER_LISTENPORT = defaultProperties.getString("PROP_NAME_WEBSERVER_LISTENPORT", "webserver.listenPort");
 		final String PROP_NAME_WEBSERVER_TEMPDIR = defaultProperties.getString("PROP_NAME_WEBSERVER_TEMPDIR", "webserver.tempDir");
+		final String PROP_NAME_WEBSERVER_ROOT = defaultProperties.getString("PROP_NAME_WEBSERVER_ROOT", "webserver.root");
 		final String PROP_NAME_WEBSERVER_SSL = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL", "webserver.ssl");
 		final String PROP_NAME_WEBSERVER_SSL_LISTENPORT = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL_LISTENPORT", "webserver.ssl.listenPort");
 		final String PROP_NAME_WEBSERVER_SSL_KEYSTORE_TYPE = defaultProperties.getString("PROP_NAME_WEBSERVER_SSL_KEYSTORE_TYPE", "webserver.ssl.keyStoreType");
@@ -147,6 +148,9 @@ public class Starter {
 
 		String tempPath = getString(PROP_NAME_WEBSERVER_TEMPDIR, System.getProperty("java.io.tmpdir"));
 		logger.info("using '" + tempPath + "' as temporary directory");
+
+		String documentRoot = getString(PROP_NAME_WEBSERVER_ROOT, warLocation.toExternalForm());
+		logger.info("using '" + documentRoot + "' as the document root");
 
 		server = new Server();
 
@@ -230,6 +234,9 @@ public class Starter {
 		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
 		webapp.setWar(warLocation.toExternalForm());
+		if(!warLocation.toExternalForm().equals(documentRoot)) {
+			webapp.setResourceBase(documentRoot);
+		}
 
 		server.setHandler(webapp);
 		server.start();
