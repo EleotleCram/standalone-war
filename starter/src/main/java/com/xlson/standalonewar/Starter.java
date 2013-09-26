@@ -234,9 +234,9 @@ public class Starter {
 		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
 		webapp.setWar(warLocation.toExternalForm());
-		if(!warLocation.toExternalForm().equals(documentRoot)) {
-			webapp.setResourceBase(documentRoot);
-		}
+//		if(!warLocation.toExternalForm().equals(documentRoot)) {
+//			webapp.setResourceBase(documentRoot);
+//		}
 
 		server.setHandler(webapp);
 		server.start();
