@@ -100,10 +100,13 @@ public class Starter {
 	}
 
 	private static PropertiesConfiguration loadConfig() {
-		String configFilename = defaultProperties.getString("webserver.configFilename", "webserver.conf");
+		final String PROP_NAME_WEBSERVER_CONFIG_FILE = defaultProperties.getString("PROP_NAME_WEBSERVER_CONFIG_FILE", "webserver.configFilename");
+		String configFilename = System.getProperty(PROP_NAME_WEBSERVER_CONFIG_FILE, defaultProperties.getString("webserver.configFilename", "webserver.conf"));
+
 		try {
 			return new PropertiesConfiguration(configFilename);
-		} catch(ConfigurationException e) {
+		} catch (ConfigurationException e) {
+			logger.warn("Could not load config file: {}", configFilename);
 			return new PropertiesConfiguration();
 		}
 	}
