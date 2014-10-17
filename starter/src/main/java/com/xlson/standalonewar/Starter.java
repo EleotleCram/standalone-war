@@ -206,7 +206,7 @@ public class Starter {
 
 		int defaultListenPort = Integer.parseInt(defaultProperties.getString("webserver.defaultListenPort", "8080"));
 		String listenPort = getString(PROP_NAME_WEBSERVER_LISTENPORT, null);
-		if ((listenPort != null) || (server.getConnectors() == null)) {
+		if ((listenPort == null) || (server.getConnectors() == null)) {
 			SocketConnector connector = new SocketConnector();
 
 			if (listenPort != null) {
