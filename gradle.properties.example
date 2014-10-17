@@ -1,3 +1,4 @@
+PROP_NAME_WEBSERVER_CONFIG_FILE=com.aimms.webserver.config.file
 PROP_NAME_WEBSERVER_TIMEOUT=com.example.net.webserver.timeout
 PROP_NAME_WEBSERVER_BIND_ADDRESS=com.example.net.webserver.bindAddress
 PROP_NAME_WEBSERVER_LISTENPORT=com.example.net.webserver.listenPort
