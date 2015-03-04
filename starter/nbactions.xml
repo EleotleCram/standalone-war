@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-clean compile</actionName>
+            <displayName>clean compile</displayName>
+            <goals>
+                <goal>-U</goal>
+                <goal>clean</goal>
+                <goal>compile</goal>
+            </goals>
+        </action>
+    </actions>

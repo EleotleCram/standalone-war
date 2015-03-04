@@ -6,3 +6,4 @@ prodDb.*
 stacktrace.log
 gradle.properties
 .gradle
+/starter/target/
