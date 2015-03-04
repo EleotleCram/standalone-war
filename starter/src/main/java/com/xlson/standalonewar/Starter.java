@@ -219,7 +219,7 @@ public class Starter {
 		if ((listenPort == null) || (!hasSslConfigured)) {
 			ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(http_config));
 
-			if (listenPort != null) {
+			if (listenPort == null) {
 				logger.warn("'" + PROP_NAME_WEBSERVER_LISTENPORT + "' was not specified, using the default port.");
 			}
 
