@@ -14,7 +14,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion>8.0.4.v20111024</jettyVersion>
+		<jettyVersion>9.2.8.v20150217</jettyVersion>
 		<slf4jVersion>1.6.1</slf4jVersion>
 	</properties>
 	
@@ -27,14 +27,8 @@
 		</dependency>
         
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jettyVersion}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
 			<version>${jettyVersion}</version>
 		</dependency>
 

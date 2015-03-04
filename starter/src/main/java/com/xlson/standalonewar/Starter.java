@@ -13,22 +13,26 @@
  */
 package com.xlson.standalonewar;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+
+import java.io.File;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+//import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,6 +163,9 @@ public class Starter {
 
 		String bindAddress = getString(PROP_NAME_WEBSERVER_BIND_ADDRESS, "0.0.0.0");
 
+		HttpConfiguration http_config = new HttpConfiguration();
+		boolean hasSslConfigured = false;
+
 		if ("true".equalsIgnoreCase(getString(PROP_NAME_WEBSERVER_SSL))) {
 			/* Note: the default keystore file type for war-launcher is PKCS12, you create a PKCS12 key store file with:
 			 *
@@ -188,17 +195,19 @@ public class Starter {
 				logger.info("using port '" + sslPort + "' for ssl connections");
 			}
 
-			SslSelectChannelConnector connector = new SslSelectChannelConnector();
-			try {
-				connector.setKeystoreType(keyStoreType);
-				connector.setKeystore(keyStoreFile);
-				connector.setPassword(keyStorePassword);
-				connector.setKeyPassword(keyStorePassword);
-				connector.setHost(bindAddress);
-				connector.setPort(sslPort);
+	        http_config.setSecureScheme("https");
+	        http_config.setSecurePort(sslPort);
+	        http_config.setOutputBufferSize(32768);
+			hasSslConfigured = true;
 
+			SslContextFactory sslContextFactory = new SslContextFactory();
+			try {
 				logger.info("Adding HTTPS connector for " + bindAddress + ":" + sslPort);
-				server.addConnector(connector);
+				// connector.setKeystoreType(keyStoreType); // @TODO do we need to set this?
+				sslContextFactory.setKeyStorePath(keyStoreFile);
+				sslContextFactory.setKeyStorePassword(keyStorePassword);
+				sslContextFactory.setKeyManagerPassword(keyStorePassword);
+
 			} catch (Exception ex) {
 				logger.error("error", ex);
 			}
@@ -206,8 +215,9 @@ public class Starter {
 
 		int defaultListenPort = Integer.parseInt(defaultProperties.getString("webserver.defaultListenPort", "8080"));
 		String listenPort = getString(PROP_NAME_WEBSERVER_LISTENPORT, null);
-		if ((listenPort == null) || (server.getConnectors() == null)) {
-			SocketConnector connector = new SocketConnector();
+		System.out.println("The listenPort from getString: " + listenPort);
+		if ((listenPort == null) || (!hasSslConfigured)) {
+			ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(http_config));
 
 			if (listenPort != null) {
 				logger.warn("'" + PROP_NAME_WEBSERVER_LISTENPORT + "' was not specified, using the default port.");
@@ -216,7 +226,7 @@ public class Starter {
 			int port = getInteger(PROP_NAME_WEBSERVER_LISTENPORT, defaultListenPort);
 			connector.setHost(bindAddress);
 			connector.setPort(port);
-			connector.setMaxIdleTime(1000 * 60 * 60);
+			connector.setIdleTimeout(1000 * 60 * 60);
 			connector.setSoLingerTime(-1);
 
 			logger.info("Adding HTTP connector for " + bindAddress + ":" + port);
