@@ -244,7 +244,7 @@ public class Starter {
 
 		webapp.setExtraClasspath(extraClasspath);
 		webapp.setContextPath("/");
-		webapp.setTempDirectory(new File(tempPath));
+//		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
 		webapp.setWar(warLocation.toExternalForm());
 //		if(!warLocation.toExternalForm().equals(documentRoot)) {
