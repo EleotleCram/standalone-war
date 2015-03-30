@@ -247,6 +247,10 @@ public class Starter {
 //		webapp.setTempDirectory(new File(tempPath));
 		webapp.setServer(server);
 		webapp.setWar(warLocation.toExternalForm());
+		if(!"".equals(getString("javax.servlet.context.tempdir", ""))) {
+			webapp.setAttribute("javax.servlet.context.tempdir",
+					  getString("javax.servlet.context.tempdir"));
+		}
 //		if(!warLocation.toExternalForm().equals(documentRoot)) {
 //			webapp.setResourceBase(documentRoot);
 //		}
