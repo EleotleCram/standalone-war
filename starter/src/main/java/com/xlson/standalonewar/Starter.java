@@ -251,6 +251,7 @@ public class Starter {
 			webapp.setAttribute("javax.servlet.context.tempdir",
 					  getString("javax.servlet.context.tempdir"));
 		}
+		webapp.setPersistTempDirectory(true);
 //		if(!warLocation.toExternalForm().equals(documentRoot)) {
 //			webapp.setResourceBase(documentRoot);
 //		}
