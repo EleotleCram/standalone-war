@@ -197,7 +197,9 @@ public class Starter {
 
 	        http_config.setSecureScheme("https");
 	        http_config.setSecurePort(sslPort);
-	        http_config.setOutputBufferSize(32768);
+	        http_config.setOutputBufferSize(1048576);
+	        http_config.setRequestHeaderSize(16384);
+	        http_config.setResponseHeaderSize(16384);
 			hasSslConfigured = true;
 
 			SslContextFactory sslContextFactory = new SslContextFactory();
